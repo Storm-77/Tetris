@@ -31,13 +31,14 @@ namespace Tetris
 
             frame = m_content.Load<Texture2D>("Board-Clear");
 
-            m_tileCombinations["Z"] = m_content.Load<Texture2D>("TILE_Z");
-            m_tileCombinations["T"] = m_content.Load<Texture2D>("TILE_T");
-            m_tileCombinations["S"] = m_content.Load<Texture2D>("TILE_S");
-            m_tileCombinations["O"] = m_content.Load<Texture2D>("TILE_O");
-            m_tileCombinations["L"] = m_content.Load<Texture2D>("TILE_L");
-            m_tileCombinations["J"] = m_content.Load<Texture2D>("TILE_J");
-            m_tileCombinations["I"] = m_content.Load<Texture2D>("TILE_I");
+            m_tileCombinations["Z"] = m_content.Load<Texture2D>("Z");
+            m_tileCombinations["T"] = m_content.Load<Texture2D>("T");
+            m_tileCombinations["S"] = m_content.Load<Texture2D>("S");
+            m_tileCombinations["O"] = m_content.Load<Texture2D>("O");
+            m_tileCombinations["L"] = m_content.Load<Texture2D>("L");
+            m_tileCombinations["J"] = m_content.Load<Texture2D>("J");
+            m_tileCombinations["I"] = m_content.Load<Texture2D>("I");
+
         }
         System.TimeSpan prev;
         int counter = 1;
@@ -59,7 +60,9 @@ namespace Tetris
 
             spriteBatch.Draw(frame, new Vector2(0, 0), Color.White);
 
-            spriteBatch.Draw(m_tileCombinations["J"], position, Color.Red);
+            // spriteBatch.Draw(m_tileCombinations["J"], position, new Color(new Vector4(0.8f,0.2f,0.2f,2f)));
+            // spriteBatch.Draw(m_tileCombinations["J"], position, Color.Green);
+            spriteBatch.Draw(m_tileCombinations["J"], position, Color.White);
 
         }
 
