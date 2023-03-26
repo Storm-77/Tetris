@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace Tetris
 {
@@ -9,6 +10,7 @@ namespace Tetris
         private int m_shapeDataIndex;
         private Color m_color;
         private int m_cellSize;
+        public Vector2 Positon;
 
         public Tetromino(uint cellSize, TetrominoShape shape = TetrominoShape.None)
         {
@@ -27,20 +29,54 @@ namespace Tetris
             m_color = colors[random.Next(colors.Length)];
 
             //? maybe add outline color variable
+
+            Positon = new(5f, 2f);
         }
 
-        public void Draw(SpriteBatch spriteBatch, int x, int y)
+        public void Draw(SpriteBatch spriteBatch)
         {
-            Rectangle cell = new Rectangle(x, y, m_cellSize, m_cellSize);
+            Rectangle cell = new Rectangle(0, 0, m_cellSize, m_cellSize);
 
             for (int i = 0; i < 4; i++)
             {
-                cell.X = x * m_cellSize + m_cellSize * s_figureData[m_shapeDataIndex, i, 0];
-                cell.Y = y * m_cellSize + m_cellSize * s_figureData[m_shapeDataIndex, i, 1];
+                cell.X = (int)(Positon.X * m_cellSize + m_cellSize * s_figureData[m_shapeDataIndex, i, 0]);
+                cell.Y = (int)(Positon.Y * m_cellSize + m_cellSize * s_figureData[m_shapeDataIndex, i, 1]);
 
                 spriteBatch.DrawRectangleColor(cell, m_color);
 
             }
         }
+
+        public int MinXComponent()
+        {
+            int min = int.MaxValue;
+
+            for (int i = 0; i < 4; i++)
+                min = (int)Math.Min(s_figureData[m_shapeDataIndex, i, 0] + Positon.X, min);
+
+            return min;
+        }
+
+        public int MaxXComponent()
+        {
+            int max = int.MinValue;
+
+            for (int i = 0; i < 4; i++)
+                max = (int)Math.Max(s_figureData[m_shapeDataIndex, i, 0] + Positon.X, max);
+
+
+            return max;
+        }
+
+        public int MaxYComponent() // lowest piece of the tetromino
+        {
+            int max = int.MinValue;
+
+            for (int i = 0; i < 4; i++)
+                max = (int)Math.Max(s_figureData[m_shapeDataIndex, i, 1] + Positon.Y, max);
+
+            return max;
+        }
+
     }
 }

@@ -12,10 +12,7 @@ public class MyGame : Game
     private SpriteBatch _spriteBatch;
     private RenderTarget2D gameCanvas;
 
-    private Grid m_grid;
-
-    private Tetromino m_testTetromino;
-
+    private LayerStack m_layerStack;
     public MyGame()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -39,9 +36,9 @@ public class MyGame : Game
 
         gameCanvas = new RenderTarget2D(GraphicsDevice, GameData.bufferW, GameData.bufferH);
 
-        m_grid = new Grid(12, 25, 50);
+        m_layerStack = new LayerStack();
 
-        m_testTetromino = new Tetromino(50);
+        m_layerStack.PushLayer(new GridLayer());
 
         base.Initialize();
     }
@@ -51,7 +48,6 @@ public class MyGame : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
     }
 
-    bool flag = true;
 
     protected override void Update(GameTime gameTime)
     {
@@ -59,14 +55,8 @@ public class MyGame : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        if (Keyboard.GetState().IsKeyUp(Keys.W) && flag)
-            flag = false;
+        m_layerStack.Update(gameTime);
 
-        if (Keyboard.GetState().IsKeyDown(Keys.W) && !flag)
-        {
-            flag = true;
-            m_testTetromino = m_grid.SpawnTetromino();
-        }
 
 
         base.Update(gameTime);
@@ -82,10 +72,7 @@ public class MyGame : Game
 
         _spriteBatch.Begin();
 
-
-        m_testTetromino.Draw(_spriteBatch, 7, 5);
-
-        m_grid.Draw(_spriteBatch); //? grid lines
+        m_layerStack.Draw(_spriteBatch); //?
 
         _spriteBatch.End();
 

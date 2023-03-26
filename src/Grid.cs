@@ -5,26 +5,28 @@ namespace Tetris
 {
     public class Grid
     {
-        private uint m_width, m_height, m_cellSize;
-        private uint[,] m_board;
+        private uint m_cellSize;
 
-        public Color linesColor { get; set; }
-        public int linesThickness { get; set; }
+        public uint Width { get; private set; }
+        public uint Height { get; private set; }
+
+        public Color LineColor { get; set; }
+        public int LineThickness { get; set; }
+
+        public uint TetrominoSpawnMargin { get; set; }
+        public uint TetrominoSpawnHeight { get; set; }
+        
         public Grid(uint X, uint Y, uint cellSize)
         {
-            m_width = X;
-            m_height = Y;
+            Width = X;
+            Height = Y;
             m_cellSize = cellSize;
 
-            linesColor = Color.Black;
-            linesThickness = 2;
+            LineColor = Color.Black;
+            LineThickness = 2;
 
-            m_board = new uint[X, Y];
-
-            EachCell((ref uint value) =>
-            {
-                value = 0; // explicitly set all cells to 0
-            });
+            TetrominoSpawnHeight = 2;
+            TetrominoSpawnMargin = 2;
 
         }
 
@@ -32,14 +34,14 @@ namespace Tetris
         {
             Rectangle rect = new Rectangle(0, 0, (int)m_cellSize, (int)m_cellSize);
 
-            for (int i = 0; i < m_width; i++)
+            for (int i = 0; i < Width; i++)
             {
-                for (int j = 0; j < m_height; j++)
+                for (int j = 0; j < Height; j++)
                 {
                     rect.X = (int)(i * m_cellSize);
                     rect.Y = (int)(j * m_cellSize);
 
-                    spriteBatch.DrawRectangleOutline(rect, linesColor, linesThickness);
+                    spriteBatch.DrawRectangleOutline(rect, LineColor, LineThickness);
                 }
             }
 
@@ -47,21 +49,15 @@ namespace Tetris
 
         public Tetromino SpawnTetromino(TetrominoShape shape = TetrominoShape.None)
         {
-            return new Tetromino(m_cellSize, shape);
-        }
 
-        //helper functions
-        private delegate void CellAction(ref uint cellValue);
+            Tetromino newPiece = new Tetromino(m_cellSize, shape);
 
-        private void EachCell(CellAction action)
-        {
-            for (int i = 0; i < m_width; i++)
-            {
-                for (int j = 0; j < m_height; j++)
-                {
-                    action(ref m_board[i, j]);
-                }
-            }
+            System.Random random = new System.Random();
+
+            newPiece.Positon.X = random.Next((int)(Width - 2 * TetrominoSpawnMargin)) + TetrominoSpawnMargin;
+            newPiece.Positon.Y = TetrominoSpawnHeight;
+
+            return newPiece;
         }
 
     }

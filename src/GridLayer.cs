@@ -9,68 +9,105 @@ namespace Tetris
 {
     public class GridLayer : Layer
     {
-        private Dictionary<string, Texture2D> m_tileCombinations;
-        private ContentManager m_content;
-        public Texture2D frame;
-        Vector2 position;
+        Tetromino m_fallingTetromino;
+        Grid m_visualGrid;
 
-        private readonly float tileSize = (float)GameData.bufferW / (float)12;
+        List<Tetromino> m_floor;
 
-        //gamestate 12x20 2d array of chars representing the board
-
-        public GridLayer(ContentManager contentManager)
+        public GridLayer()
         {
-            m_content = contentManager;
+            m_visualGrid = new Grid(GameData.cellsX, GameData.cellsY, GameData.cellSize);
+            m_floor = new();
         }
 
         public override void Initialize()
         {
-            m_tileCombinations = new Dictionary<string, Texture2D>();
-            position = Vector2.Zero;
-
-
-            frame = m_content.Load<Texture2D>("Board-Clear");
-
-            m_tileCombinations["Z"] = m_content.Load<Texture2D>("Z");
-            m_tileCombinations["T"] = m_content.Load<Texture2D>("T");
-            m_tileCombinations["S"] = m_content.Load<Texture2D>("S");
-            m_tileCombinations["O"] = m_content.Load<Texture2D>("O");
-            m_tileCombinations["L"] = m_content.Load<Texture2D>("L");
-            m_tileCombinations["J"] = m_content.Load<Texture2D>("J");
-            m_tileCombinations["I"] = m_content.Load<Texture2D>("I");
-
-            
-
+            m_fallingTetromino = m_visualGrid.SpawnTetromino();
         }
-        System.TimeSpan prev;
-        int counter = 1;
+
+        private System.TimeSpan prev;
+        bool m_flagW = true;
+        bool m_flagLeft = true;
+        bool m_flagRight = true;
 
         public override void Update(GameTime gameTime)
         {
-            if ((gameTime.TotalGameTime - prev).Seconds >= 1)
+            if ((gameTime.TotalGameTime - prev).Milliseconds >= 600)
             {
-
-                counter++;
-                position.Y += tileSize;
+                m_fallingTetromino.Positon.Y++; // make it fall
 
                 prev = gameTime.TotalGameTime;
             }
+
+
+            if (Keyboard.GetState().IsKeyUp(Keys.W) && m_flagW)
+                m_flagW = false;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.W) && !m_flagW)
+            {
+                m_flagW = true;
+                m_fallingTetromino = m_visualGrid.SpawnTetromino();
+            }
+
+            //move to the left
+            if (Keyboard.GetState().IsKeyUp(Keys.Left) && m_flagLeft)
+                m_flagLeft = false;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Left) && !m_flagLeft)
+            {
+                m_flagLeft = true;
+
+                if (m_fallingTetromino.MinXComponent() > 0)
+                    m_fallingTetromino.Positon.X--;
+
+            }
+
+            //move to the right
+            if (Keyboard.GetState().IsKeyUp(Keys.Right) && m_flagRight)
+                m_flagRight = false;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Right) && !m_flagRight)
+            {
+                m_flagRight = true;
+
+                if (m_fallingTetromino.MaxXComponent() < m_visualGrid.Width - 1)
+                    m_fallingTetromino.Positon.X++;
+
+            }
+
+
+            //todo make tetromino fall fast when down arrow is pressed
+
+            //todo make it stop on lowest block
+
+            // if (m_fallingTetromino.MaxYComponent() == m_visualGrid.Height - 1)
+            // {
+            //     m_floor.Add(m_fallingTetromino);
+            //     m_fallingTetromino = m_visualGrid.SpawnTetromino();
+            // }
+
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
 
-            spriteBatch.Draw(frame, new Vector2(0, 0), Color.White);
+            foreach (var item in m_floor)
+            {
+                item.Draw(spriteBatch);
+            }
 
-            // spriteBatch.Draw(m_tileCombinations["J"], position, new Color(new Vector4(0.8f,0.2f,0.2f,2f)));
-            // spriteBatch.Draw(m_tileCombinations["J"], position, Color.Green);
-            spriteBatch.Draw(m_tileCombinations["J"], position, Color.White);
+            m_fallingTetromino.Draw(spriteBatch);
 
+            //draw all tetrominos
+
+
+
+
+            m_visualGrid.Draw(spriteBatch); // grid lines drawn over tetrominos
         }
 
         protected override void UnloadContent()
         {
-            m_content.Unload();
         }
 
     }
