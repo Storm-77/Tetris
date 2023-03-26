@@ -5,7 +5,8 @@ namespace Tetris
 {
     public class Grid
     {
-        private uint m_cellSize;
+        public uint CellSize { get; private set; }
+        private bool[,] m_gridData; // holds indecies in m_floor list
 
         public uint Width { get; private set; }
         public uint Height { get; private set; }
@@ -15,12 +16,12 @@ namespace Tetris
 
         public uint TetrominoSpawnMargin { get; set; }
         public uint TetrominoSpawnHeight { get; set; }
-        
+
         public Grid(uint X, uint Y, uint cellSize)
         {
             Width = X;
             Height = Y;
-            m_cellSize = cellSize;
+            CellSize = cellSize;
 
             LineColor = Color.Black;
             LineThickness = 2;
@@ -28,18 +29,39 @@ namespace Tetris
             TetrominoSpawnHeight = 2;
             TetrominoSpawnMargin = 2;
 
+
+            m_gridData = new bool[GameData.cellsX, GameData.cellsY];
+
+            for (int i = 0; i < GameData.cellsX; i++)
+            {
+                for (int j = 0; j < GameData.cellsY; j++)
+                {
+                    m_gridData[i, j] = false;
+                }
+            }
+
+        }
+
+        public bool DetectCollision(Tetromino tetromino)
+        {
+            return tetromino.Collides(ref m_gridData);
+        }
+
+        public void LandTetromino(Tetromino tetromino)
+        {
+            tetromino.Land(ref m_gridData);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            Rectangle rect = new Rectangle(0, 0, (int)m_cellSize, (int)m_cellSize);
+            Rectangle rect = new Rectangle(0, 0, (int)CellSize, (int)CellSize);
 
             for (int i = 0; i < Width; i++)
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    rect.X = (int)(i * m_cellSize);
-                    rect.Y = (int)(j * m_cellSize);
+                    rect.X = (int)(i * CellSize);
+                    rect.Y = (int)(j * CellSize);
 
                     spriteBatch.DrawRectangleOutline(rect, LineColor, LineThickness);
                 }
@@ -50,7 +72,7 @@ namespace Tetris
         public Tetromino SpawnTetromino(TetrominoShape shape = TetrominoShape.None)
         {
 
-            Tetromino newPiece = new Tetromino(m_cellSize, shape);
+            Tetromino newPiece = new Tetromino(this, shape);
 
             System.Random random = new System.Random();
 
