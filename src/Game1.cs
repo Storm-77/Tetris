@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 
 namespace Tetris;
@@ -10,7 +11,8 @@ public class MyGame : Game
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     private RenderTarget2D gameCanvas;
-    private LayerStack m_layerStack;
+
+    private Grid m_grid;
 
     public MyGame()
     {
@@ -21,7 +23,6 @@ public class MyGame : Game
 
     protected override void Initialize()
     {
-        // TODO: Add your initialization logic here
 
         float factor = 1.8f;
 
@@ -31,13 +32,12 @@ public class MyGame : Game
         _graphics.PreferredBackBufferHeight = (int)(GameData.bufferH / factor);
         _graphics.ApplyChanges();
 
-        m_layerStack = new LayerStack();
 
+        Utility.Init(GraphicsDevice);
 
         gameCanvas = new RenderTarget2D(GraphicsDevice, GameData.bufferW, GameData.bufferH);
 
-        m_layerStack.PushLayer(new Grid(Content));
-
+        m_grid = new Grid(12, 25, 50);
 
         base.Initialize();
     }
@@ -54,7 +54,6 @@ public class MyGame : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        m_layerStack.Update(gameTime);
 
         base.Update(gameTime);
     }
@@ -68,7 +67,7 @@ public class MyGame : Game
 
         _spriteBatch.Begin();
 
-        m_layerStack.Draw(_spriteBatch);
+        m_grid.Draw(_spriteBatch); //? grid lines
 
         _spriteBatch.End();
 
@@ -82,5 +81,12 @@ public class MyGame : Game
 
 
         base.Draw(gameTime);
+    }
+
+    protected override void OnExiting(object sender, EventArgs args)
+    {
+        Utility.Shutdown();
+
+        base.OnExiting(sender, args);
     }
 }
