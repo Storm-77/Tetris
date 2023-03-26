@@ -55,7 +55,7 @@ namespace Tetris
                 int X = (int)(Positon.X + s_figureData[m_shapeDataIndex, i, 0]);
                 int Y = (int)(Positon.Y + s_figureData[m_shapeDataIndex, i, 1]);
 
-                if (grid[X, Y])
+                if (X < 0 || Y < 0 || grid[X, Y])
                 {
                     Positon.Y--;
                     return true;

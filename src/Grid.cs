@@ -30,11 +30,11 @@ namespace Tetris
             TetrominoSpawnMargin = 2;
 
 
-            m_gridData = new bool[GameData.cellsX, GameData.cellsY];
+            m_gridData = new bool[X, Y];
 
-            for (int i = 0; i < GameData.cellsX; i++)
+            for (int i = 0; i < X; i++)
             {
-                for (int j = 0; j < GameData.cellsY; j++)
+                for (int j = 0; j < Y; j++)
                 {
                     m_gridData[i, j] = false;
                 }

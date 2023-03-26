@@ -23,22 +23,25 @@ public class MyGame : Game
     protected override void Initialize()
     {
 
-        float factor = 1.8f;
+        float factor = 1f;
 
         _graphics.IsFullScreen = false;
 
-        _graphics.PreferredBackBufferWidth = (int)(GameData.bufferW / factor);
-        _graphics.PreferredBackBufferHeight = (int)(GameData.bufferH / factor);
+        _graphics.PreferredBackBufferWidth = (int)(GameData.windowW * factor);
+        _graphics.PreferredBackBufferHeight = (int)(GameData.windowH * factor);
         _graphics.ApplyChanges();
-
 
         Utility.Init(GraphicsDevice);
 
-        gameCanvas = new RenderTarget2D(GraphicsDevice, GameData.bufferW, GameData.bufferH);
+        var gameLayer = new GridLayer();
+
+        Vector2 gridSize = gameLayer.GetGridSizePx();
+
+
+        gameCanvas = new RenderTarget2D(GraphicsDevice, (int)gridSize.X, (int)gridSize.Y);
 
         m_layerStack = new LayerStack();
-
-        m_layerStack.PushLayer(new GridLayer());
+        m_layerStack.PushLayer(gameLayer);
 
         base.Initialize();
     }
@@ -56,8 +59,6 @@ public class MyGame : Game
             Exit();
 
         m_layerStack.Update(gameTime);
-
-
 
         base.Update(gameTime);
     }

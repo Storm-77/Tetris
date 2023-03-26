@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -28,10 +26,11 @@ namespace Tetris
 
         private System.TimeSpan prev;
         bool m_flagW = true;
-
         public override void Update(GameTime gameTime)
         {
-            if ((gameTime.TotalGameTime - prev).Milliseconds >= 100)
+            int interTickDelay = Keyboard.GetState().IsKeyDown(Keys.Down) ? 30 : 400;
+
+            if ((gameTime.TotalGameTime - prev).Milliseconds >= interTickDelay)
             {
                 m_fallingTetromino.Positon.Y++; // make it fall
 
@@ -40,7 +39,9 @@ namespace Tetris
 
 
             if (Keyboard.GetState().IsKeyUp(Keys.W) && m_flagW)
+            {
                 m_flagW = false;
+            }
 
             if (Keyboard.GetState().IsKeyDown(Keys.W) && !m_flagW)
             {
@@ -51,12 +52,13 @@ namespace Tetris
 
             m_fallingTetrominoController.Update(gameTime);
 
-            //todo make tetromino fall fast when down arrow is pressed
-
-            //todo detect game over
-
             if (m_grid.DetectCollision(m_fallingTetromino) || m_fallingTetromino.MaxYComponent() == m_grid.Height - 1) //collision or ground hit
             {
+                if (m_fallingTetromino.Positon.Y <= m_grid.TetrominoSpawnHeight)//game over
+                {
+                    //todo switch to game over screeen
+                    return;
+                }
                 m_grid.LandTetromino(m_fallingTetromino);
 
                 m_floor.Add(m_fallingTetromino);
@@ -83,6 +85,17 @@ namespace Tetris
         protected override void UnloadContent()
         {
         }
+
+        public Vector2 GetGridSizePx()
+        {
+            Vector2 size;
+
+            size.X = m_grid.Width * m_grid.CellSize;
+            size.Y = m_grid.Height * m_grid.CellSize;
+
+            return size;
+        }
+
 
     }
 }
