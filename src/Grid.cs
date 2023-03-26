@@ -45,6 +45,11 @@ namespace Tetris
 
         }
 
+        public Tetromino SpawnTetromino(TetrominoShape shape = TetrominoShape.None)
+        {
+            return new Tetromino(m_cellSize, shape);
+        }
+
         //helper functions
         private delegate void CellAction(ref uint cellValue);
 

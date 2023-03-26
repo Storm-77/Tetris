@@ -14,6 +14,8 @@ public class MyGame : Game
 
     private Grid m_grid;
 
+    private Tetromino m_testTetromino;
+
     public MyGame()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -39,6 +41,8 @@ public class MyGame : Game
 
         m_grid = new Grid(12, 25, 50);
 
+        m_testTetromino = new Tetromino(50);
+
         base.Initialize();
     }
 
@@ -47,12 +51,22 @@ public class MyGame : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
     }
 
+    bool flag = true;
 
     protected override void Update(GameTime gameTime)
     {
 
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+
+        if (Keyboard.GetState().IsKeyUp(Keys.W) && flag)
+            flag = false;
+
+        if (Keyboard.GetState().IsKeyDown(Keys.W) && !flag)
+        {
+            flag = true;
+            m_testTetromino = m_grid.SpawnTetromino();
+        }
 
 
         base.Update(gameTime);
@@ -65,7 +79,11 @@ public class MyGame : Game
         GraphicsDevice.SetRenderTarget(gameCanvas);
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
+
         _spriteBatch.Begin();
+
+
+        m_testTetromino.Draw(_spriteBatch, 7, 5);
 
         m_grid.Draw(_spriteBatch); //? grid lines
 
