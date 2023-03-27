@@ -10,12 +10,10 @@ namespace Tetris
         Tetromino m_fallingTetromino;
         TetrominoKeyController m_fallingTetrominoController;
         Grid m_grid;
-        List<Tetromino> m_floor;
 
         public GridLayer()
         {
             m_grid = new Grid(GameData.cellsX, GameData.cellsY, GameData.cellSize);
-            m_floor = new();
         }
 
         public override void Initialize()
@@ -61,8 +59,6 @@ namespace Tetris
                 }
                 m_grid.LandTetromino(m_fallingTetromino);
 
-                m_floor.Add(m_fallingTetromino);
-
                 m_fallingTetromino = m_grid.SpawnTetromino();
                 m_fallingTetrominoController.Tetromino = m_fallingTetromino;
             }
@@ -71,15 +67,8 @@ namespace Tetris
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-
-            foreach (var item in m_floor)
-            {
-                item.Draw(spriteBatch);
-            }
-
             m_fallingTetromino.Draw(spriteBatch);
-
-            m_grid.Draw(spriteBatch); // grid lines drawn over tetrominos
+            m_grid.DrawLines(spriteBatch); // grid lines drawn over tetrominos
         }
 
         protected override void UnloadContent()

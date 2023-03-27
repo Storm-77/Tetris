@@ -23,19 +23,20 @@ public class MyGame : Game
     protected override void Initialize()
     {
 
-        float factor = 1f;
+        var gameLayer = new GridLayer();
+
+        Vector2 gridSize = gameLayer.GetGridSizePx();
+
+        float factor = 0.6f;
 
         _graphics.IsFullScreen = false;
 
-        _graphics.PreferredBackBufferWidth = (int)(GameData.windowW * factor);
-        _graphics.PreferredBackBufferHeight = (int)(GameData.windowH * factor);
+        _graphics.PreferredBackBufferWidth = (int)(gridSize.X * factor);
+        _graphics.PreferredBackBufferHeight = (int)(gridSize.Y * factor);
         _graphics.ApplyChanges();
 
         Utility.Init(GraphicsDevice);
 
-        var gameLayer = new GridLayer();
-
-        Vector2 gridSize = gameLayer.GetGridSizePx();
 
 
         gameCanvas = new RenderTarget2D(GraphicsDevice, (int)gridSize.X, (int)gridSize.Y);

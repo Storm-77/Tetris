@@ -6,7 +6,7 @@ namespace Tetris
     public class Grid
     {
         public uint CellSize { get; private set; }
-        private bool[,] m_gridData; // holds indecies in m_floor list
+        private Color[,] m_gridData; // holds indecies in m_floor list
 
         public uint Width { get; private set; }
         public uint Height { get; private set; }
@@ -30,13 +30,13 @@ namespace Tetris
             TetrominoSpawnMargin = 2;
 
 
-            m_gridData = new bool[X, Y];
+            m_gridData = new Color[X, Y];
 
             for (int i = 0; i < X; i++)
             {
                 for (int j = 0; j < Y; j++)
                 {
-                    m_gridData[i, j] = false;
+                    m_gridData[i, j] = Color.Black;
                 }
             }
 
@@ -52,7 +52,7 @@ namespace Tetris
             tetromino.Land(ref m_gridData);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void DrawLines(SpriteBatch spriteBatch)
         {
             Rectangle rect = new Rectangle(0, 0, (int)CellSize, (int)CellSize);
 
@@ -63,7 +63,10 @@ namespace Tetris
                     rect.X = (int)(i * CellSize);
                     rect.Y = (int)(j * CellSize);
 
-                    spriteBatch.DrawRectangleOutline(rect, LineColor, LineThickness);
+                    if (m_gridData[i, j] != Color.Black)
+                        spriteBatch.DrawRectangleFull(rect, m_gridData[i, j], LineColor, LineThickness);
+                    else
+                        spriteBatch.DrawRectangleOutline(rect, LineColor, LineThickness);
                 }
             }
 
@@ -71,7 +74,6 @@ namespace Tetris
 
         public Tetromino SpawnTetromino(TetrominoShape shape = TetrominoShape.None)
         {
-
             Tetromino newPiece = new Tetromino(this, shape);
 
             System.Random random = new System.Random();

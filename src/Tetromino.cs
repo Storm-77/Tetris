@@ -24,7 +24,9 @@ namespace Tetris
             s_figureDataIndexMap.TryGetValue(shape, out m_shapeDataIndex);
 
             // pick random color from pool
-            Color[] colors = { Color.DeepPink, Color.Orange, Color.PaleGreen, Color.MediumBlue, Color.MediumVioletRed };
+            Color[] colors = { Color.DeepPink, Color.Orange, Color.Yellow, Color.Green, Color.AliceBlue, Color.Indigo, Color.Violet, Color.DeepPink,
+                                Color.Plum, Color.Brown, Color.SaddleBrown, Color.Cyan
+                            };
 
             System.Random random = new System.Random();
 
@@ -71,7 +73,7 @@ namespace Tetris
             }
         }
 
-        public bool Collides(ref bool[,] grid)
+        public bool Collides(ref Color[,] grid)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -80,7 +82,7 @@ namespace Tetris
                 int X = (int)(Positon.X + A);
                 int Y = (int)(Positon.Y + B);
 
-                if (X < 0 || Y < 0 || grid[X, Y])
+                if (X < 0 || Y < 0 || grid[X, Y] != Color.Black)
                 {
                     Positon.Y--;
                     return true;
@@ -90,7 +92,7 @@ namespace Tetris
             return false;
         }
 
-        public void Land(ref bool[,] grid)
+        public void Land(ref Color[,] grid)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -98,7 +100,7 @@ namespace Tetris
                 int X = (int)(Positon.X + A);
                 int Y = (int)(Positon.Y + B);
 
-                grid[X, Y] = true;
+                grid[X, Y] = m_color;
 
             }
         }
