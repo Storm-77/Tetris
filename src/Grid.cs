@@ -84,5 +84,25 @@ namespace Tetris
             return newPiece;
         }
 
+        public void TestFills()
+        {
+
+            for (int y = (int)(Height - 1); y >= 0; y--)
+            {
+                int counter = 0;
+                for (int x = 0; x < Width; x++)
+                {
+                    if (m_gridData[x, y] != Color.Black)
+                        counter++;
+                }
+
+                if (counter == Width)
+                {
+                    //todo shift entire array
+                }
+            }
+
+        }
+
     }
 }

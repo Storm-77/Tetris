@@ -63,6 +63,8 @@ namespace Tetris
                 m_fallingTetrominoController.Tetromino = m_fallingTetromino;
             }
 
+            m_grid.TestFills();
+
         }
 
         public override void Draw(SpriteBatch spriteBatch)
