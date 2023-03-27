@@ -12,6 +12,7 @@ namespace Tetris
 
         bool m_flagLeft = true;
         bool m_flagRight = true;
+        bool m_flagUp = true;
 
         public Tetromino Tetromino { get; set; }
 
@@ -35,6 +36,16 @@ namespace Tetris
             {
                 m_flagRight = true;
                 Tetromino.Positon.X++;
+            }
+
+            //rotarion
+            if (Keyboard.GetState().IsKeyUp(Keys.Up) && m_flagUp)
+                m_flagUp = false;
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Up) && !m_flagUp)
+            {
+                m_flagUp = true;
+                Tetromino.Rotate();
             }
 
             Tetromino.CheckOuterBorders();

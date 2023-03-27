@@ -12,6 +12,8 @@ namespace Tetris
         public Vector2 Positon;
         private Grid m_myGrid;
 
+        bool m_rotated = false;
+
         public Tetromino(Grid belongsTo, TetrominoShape shape = TetrominoShape.None)
         {
             m_myGrid = belongsTo;
@@ -33,14 +35,36 @@ namespace Tetris
             Positon = new(5f, 2f);
         }
 
+        public void Rotate()
+        {
+            m_rotated = !m_rotated;
+        }
+
+        private (int x, int y) GetPieceXY(int i)
+        {
+            int X = s_figureData[m_shapeDataIndex, i, 0];
+            int Y = s_figureData[m_shapeDataIndex, i, 1];
+
+            if (m_rotated)
+            {
+                int temp = X;
+                X = Y;
+                Y = -temp;
+            }
+
+            return (X, Y);
+        }
+
         public void Draw(SpriteBatch spriteBatch)
         {
             Rectangle cell = new Rectangle(0, 0, (int)m_myGrid.CellSize, (int)m_myGrid.CellSize);
 
             for (int i = 0; i < 4; i++)
             {
-                cell.X = (int)(Positon.X * m_myGrid.CellSize + m_myGrid.CellSize * s_figureData[m_shapeDataIndex, i, 0]);
-                cell.Y = (int)(Positon.Y * m_myGrid.CellSize + m_myGrid.CellSize * s_figureData[m_shapeDataIndex, i, 1]);
+                (int X, int Y) = GetPieceXY(i);
+
+                cell.X = (int)(Positon.X * m_myGrid.CellSize + m_myGrid.CellSize * X);
+                cell.Y = (int)(Positon.Y * m_myGrid.CellSize + m_myGrid.CellSize * Y);
 
                 spriteBatch.DrawRectangleColor(cell, m_color);
 
@@ -51,9 +75,10 @@ namespace Tetris
         {
             for (int i = 0; i < 4; i++)
             {
+                (int A, int B) = GetPieceXY(i);
 
-                int X = (int)(Positon.X + s_figureData[m_shapeDataIndex, i, 0]);
-                int Y = (int)(Positon.Y + s_figureData[m_shapeDataIndex, i, 1]);
+                int X = (int)(Positon.X + A);
+                int Y = (int)(Positon.Y + B);
 
                 if (X < 0 || Y < 0 || grid[X, Y])
                 {
@@ -69,8 +94,9 @@ namespace Tetris
         {
             for (int i = 0; i < 4; i++)
             {
-                int X = (int)(Positon.X + s_figureData[m_shapeDataIndex, i, 0]);
-                int Y = (int)(Positon.Y + s_figureData[m_shapeDataIndex, i, 1]);
+                (int A, int B) = GetPieceXY(i);
+                int X = (int)(Positon.X + A);
+                int Y = (int)(Positon.Y + B);
 
                 grid[X, Y] = true;
 
@@ -80,18 +106,17 @@ namespace Tetris
         public void CheckOuterBorders()
         {
             int max = int.MinValue;
-
-            for (int i = 0; i < 4; i++)
-                max = (int)Math.Max(s_figureData[m_shapeDataIndex, i, 0] + Positon.X, max);
-
-
-            if (max > m_myGrid.Width - 1)
-                Positon.X--;
-
             int min = int.MaxValue;
 
             for (int i = 0; i < 4; i++)
-                min = (int)Math.Min(s_figureData[m_shapeDataIndex, i, 0] + Positon.X, min);
+            {
+                (int A, int B) = GetPieceXY(i);
+                max = (int)Math.Max(A + Positon.X, max);
+                min = (int)Math.Min(A + Positon.X, min);
+            }
+
+            if (max > m_myGrid.Width - 1)
+                Positon.X--;
 
             if (min < 0)
                 Positon.X++;
@@ -102,7 +127,10 @@ namespace Tetris
             int max = int.MinValue;
 
             for (int i = 0; i < 4; i++)
-                max = (int)Math.Max(s_figureData[m_shapeDataIndex, i, 1] + Positon.Y, max);
+            {
+                (int A, int B) = GetPieceXY(i);
+                max = (int)Math.Max(B + Positon.Y, max);
+            }
 
             return max;
         }
