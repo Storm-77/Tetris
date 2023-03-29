@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.ImGui;
+using ImGuiNET;
 using System;
 using System.Collections.Generic;
 
@@ -13,6 +15,8 @@ public class MyGame : Game
     private RenderTarget2D gameCanvas;
 
     private LayerStack m_layerStack;
+
+    public ImGuiRenderer GuiRenderer; //This is the ImGuiRenderer
     public MyGame()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -22,22 +26,20 @@ public class MyGame : Game
 
     protected override void Initialize()
     {
+        _graphics.IsFullScreen = false;
+        _graphics.PreferredBackBufferWidth = GameData.windowW;
+        _graphics.PreferredBackBufferHeight = GameData.windowH;
+
+        _graphics.ApplyChanges();
+
+        GuiRenderer = new ImGuiRenderer(this).Initialize().RebuildFontAtlas();
+
+
+        Utility.Init(GraphicsDevice);
 
         var gameLayer = new GridLayer();
 
         Vector2 gridSize = gameLayer.GetGridSizePx();
-
-        float factor = 0.6f;
-
-        _graphics.IsFullScreen = false;
-
-        _graphics.PreferredBackBufferWidth = (int)(gridSize.X * factor);
-        _graphics.PreferredBackBufferHeight = (int)(gridSize.Y * factor);
-        _graphics.ApplyChanges();
-
-        Utility.Init(GraphicsDevice);
-
-
 
         gameCanvas = new RenderTarget2D(GraphicsDevice, (int)gridSize.X, (int)gridSize.Y);
 
@@ -88,6 +90,19 @@ public class MyGame : Game
 
 
         base.Draw(gameTime);
+
+
+        GuiRenderer.BeginLayout(gameTime);
+
+        //Insert Your ImGui code
+
+        ImGui.Begin("mywindow");
+
+        ImGui.Text("Hello tetris");
+
+        ImGui.End();
+
+        GuiRenderer.EndLayout();
     }
 
     protected override void OnExiting(object sender, EventArgs args)
