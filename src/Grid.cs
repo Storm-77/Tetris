@@ -98,11 +98,19 @@ namespace Tetris
 
                 if (counter == Width)
                 {
-                    //todo shift entire array
+
+                    for (int i = y; i >= 1; i--) // <y,1> starts at filled row
+                    {
+                        for (int j = 0; j < Width; j++)
+                        {
+                            m_gridData[j, i] = m_gridData[j, i - 1];
+                        }
+                    }
                 }
             }
 
         }
+
 
     }
 }

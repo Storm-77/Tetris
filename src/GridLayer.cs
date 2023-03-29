@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -10,6 +9,9 @@ namespace Tetris
         Tetromino m_fallingTetromino;
         TetrominoKeyController m_fallingTetrominoController;
         Grid m_grid;
+
+        public static uint InitialTickInterval = 400;
+        public static uint MinimalTickInterval = 50;
 
         public GridLayer()
         {
@@ -24,15 +26,20 @@ namespace Tetris
 
         private System.TimeSpan prev;
         bool m_flagW = true;
+
+        uint delay = InitialTickInterval;
         public override void Update(GameTime gameTime)
         {
-            int interTickDelay = Keyboard.GetState().IsKeyDown(Keys.Down) ? 30 : 400;
+            uint interTickDelay = Keyboard.GetState().IsKeyDown(Keys.Down) ? 30 : delay;
 
             if ((gameTime.TotalGameTime - prev).Milliseconds >= interTickDelay)
             {
-                m_fallingTetromino.Positon.Y++; // make it fall
+                if (delay > MinimalTickInterval)
+                    delay -= 6; //delay step
 
+                m_fallingTetromino.Positon.Y++; // make it fall
                 prev = gameTime.TotalGameTime;
+
             }
 
 
@@ -48,12 +55,13 @@ namespace Tetris
                 m_fallingTetrominoController.Tetromino = m_fallingTetromino;
             }
 
-            m_fallingTetrominoController.Update(gameTime);
+
 
             if (m_grid.DetectCollision(m_fallingTetromino) || m_fallingTetromino.MaxYComponent() == m_grid.Height - 1) //collision or ground hit
             {
-                if (m_fallingTetromino.Positon.Y <= m_grid.TetrominoSpawnHeight)//game over
+                if (m_fallingTetromino.Positon.Y <= m_grid.TetrominoSpawnHeight) //game over
                 {
+                    int a = 0;
                     //todo switch to game over screeen
                     return;
                 }
@@ -61,8 +69,10 @@ namespace Tetris
 
                 m_fallingTetromino = m_grid.SpawnTetromino();
                 m_fallingTetrominoController.Tetromino = m_fallingTetromino;
+                delay = InitialTickInterval;
             }
 
+            m_fallingTetrominoController.Update(gameTime);
             m_grid.TestFills();
 
         }
