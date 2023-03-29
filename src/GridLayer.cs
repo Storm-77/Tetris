@@ -6,42 +6,25 @@ namespace Tetris
 {
     public class GridLayer : Layer
     {
-        Tetromino m_fallingTetromino;
-        TetrominoKeyController m_fallingTetrominoController;
-        Grid m_grid;
-
-        public static uint InitialTickInterval = 400;
-        public static uint MinimalTickInterval = 50;
+        private TetrominoController m_tetrominoController;
+        private Grid m_grid;
+        private TetrominoControllerFactory m_controllerFactory;
 
         public GridLayer()
         {
             m_grid = new Grid(GameData.cellsX, GameData.cellsY, GameData.cellSize);
+            m_controllerFactory = new TetrominoControllerFactory(ref m_grid);
         }
 
         public override void Initialize()
         {
-            m_fallingTetromino = m_grid.SpawnTetromino();
-            m_fallingTetrominoController = new(m_fallingTetromino);
+            m_tetrominoController = m_controllerFactory.MakeController();
         }
 
-        private System.TimeSpan prev;
         bool m_flagW = true;
 
-        uint delay = InitialTickInterval;
         public override void Update(GameTime gameTime)
         {
-            uint interTickDelay = Keyboard.GetState().IsKeyDown(Keys.Down) ? 30 : delay;
-
-            if ((gameTime.TotalGameTime - prev).Milliseconds >= interTickDelay)
-            {
-                if (delay > MinimalTickInterval)
-                    delay -= 6; //delay step
-
-                m_fallingTetromino.Positon.Y++; // make it fall
-                prev = gameTime.TotalGameTime;
-
-            }
-
 
             if (Keyboard.GetState().IsKeyUp(Keys.W) && m_flagW)
             {
@@ -51,35 +34,30 @@ namespace Tetris
             if (Keyboard.GetState().IsKeyDown(Keys.W) && !m_flagW)
             {
                 m_flagW = true;
-                m_fallingTetromino = m_grid.SpawnTetromino();
-                m_fallingTetrominoController.Tetromino = m_fallingTetromino;
+                m_tetrominoController = m_controllerFactory.MakeController();
             }
 
-
-
-            if (m_grid.DetectCollision(m_fallingTetromino) || m_fallingTetromino.MaxYComponent() == m_grid.Height - 1) //collision or ground hit
+            if (m_grid.DetectCollision(m_tetrominoController.Tetromino) || m_tetrominoController.Tetromino.MaxYComponent() == m_grid.Height - 1) //collision or ground hit
             {
-                if (m_fallingTetromino.Positon.Y <= m_grid.TetrominoSpawnHeight) //game over
+                if (m_tetrominoController.Tetromino.Positon.Y <= m_grid.TetrominoSpawnHeight) //game over
                 {
                     int a = 0;
                     //todo switch to game over screeen
                     return;
                 }
-                m_grid.LandTetromino(m_fallingTetromino);
+                m_grid.LandTetromino(m_tetrominoController.Tetromino);
 
-                m_fallingTetromino = m_grid.SpawnTetromino();
-                m_fallingTetrominoController.Tetromino = m_fallingTetromino;
-                delay = InitialTickInterval;
+                m_tetrominoController = m_controllerFactory.MakeController();
             }
 
-            m_fallingTetrominoController.Update(gameTime);
+            m_tetrominoController.Update(gameTime);
             m_grid.TestFills();
 
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            m_fallingTetromino.Draw(spriteBatch);
+            m_tetrominoController.Tetromino.Draw(spriteBatch);
             m_grid.DrawLines(spriteBatch); // grid lines drawn over tetrominos
         }
 
