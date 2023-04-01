@@ -39,5 +39,12 @@ namespace Tetris
 
         //TODO handle layer deletion, LayerContent Unloading
 
+        public void Termiate()
+        {
+            int l = m_layers.Count;
+            for (int i = 0; i < l; i++)
+                m_layers.RemoveAt(0);
+        }
+
     }
 }

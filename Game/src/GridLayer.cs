@@ -1,24 +1,45 @@
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace Tetris
 {
-    public class GridLayer : Layer
+    public class GridLayer : DrawableGameComponent
     {
         private TetrominoController m_tetrominoController;
         private Grid m_grid;
         private TetrominoControllerFactory m_controllerFactory;
+        private RenderTarget2D m_canvas;
+        private SpriteBatch m_spriteBatch;
 
-        public GridLayer()
+        Texture2D m_bg;
+
+        public GridLayer(Game owner) : base(owner)
         {
             m_grid = new Grid(GameData.cellsX, GameData.cellsY, GameData.cellSize);
             m_controllerFactory = new TetrominoControllerFactory(ref m_grid);
         }
 
+        protected override void LoadContent()
+        {
+            m_bg = Game.Content.Load<Texture2D>("background");
+        }
+
         public override void Initialize()
         {
             m_tetrominoController = m_controllerFactory.MakeController();
+
+            Vector2 size;
+            size.X = m_grid.Width * m_grid.CellSize;
+            size.Y = m_grid.Height * m_grid.CellSize;
+
+            m_canvas = new RenderTarget2D(GraphicsDevice, (int)size.X, (int)size.Y);
+            m_canvas.Name = "GameGrid";
+
+            m_spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            GraphicsDevice.SetRenderTargets(m_canvas);
         }
 
         bool m_flagW = true;
@@ -55,10 +76,18 @@ namespace Tetris
 
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(GameTime _)
         {
-            m_tetrominoController.Tetromino.Draw(spriteBatch);
-            m_grid.DrawLines(spriteBatch); // grid lines drawn over tetrominos
+            GraphicsDevice.SetRenderTarget(m_canvas);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            m_spriteBatch.Begin();
+
+            m_tetrominoController.Tetromino.Draw(m_spriteBatch);
+            m_grid.DrawLines(m_spriteBatch); // grid lines drawn over tetrominos
+
+            m_spriteBatch.End();
+            GraphicsDevice.SetRenderTarget(null);
         }
 
         protected override void UnloadContent()

@@ -4,19 +4,16 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.ImGui;
 using ImGuiNET;
 using System;
-using System.Collections.Generic;
 
 namespace Tetris;
 
 public class MyGame : Game
 {
     private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
-    private RenderTarget2D gameCanvas;
-
-    private LayerStack m_layerStack;
-
-    public ImGuiRenderer GuiRenderer; //This is the ImGuiRenderer
+    private SpriteBatch _spriteBatch; //? unused
+    private ImGuiRenderer m_GuiRenderer;
+    private IntPtr m_canvasGpuId;
+    Vector2 m_canvasSize;
     public MyGame()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -32,28 +29,28 @@ public class MyGame : Game
 
         _graphics.ApplyChanges();
 
-        GuiRenderer = new ImGuiRenderer(this).Initialize().RebuildFontAtlas();
-
+        m_GuiRenderer = new ImGuiRenderer(this).Initialize().RebuildFontAtlas();
 
         Utility.Init(GraphicsDevice);
 
-        var gameLayer = new GridLayer();
-
-        Vector2 gridSize = gameLayer.GetGridSizePx();
-
-        gameCanvas = new RenderTarget2D(GraphicsDevice, (int)gridSize.X, (int)gridSize.Y);
-
-        m_layerStack = new LayerStack();
-        m_layerStack.PushLayer(gameLayer);
+        var layer = new GridLayer(this);
+        Components.Add(layer);
 
         base.Initialize();
+
+        Texture2D can = Array.Find(GraphicsDevice.GetRenderTargets(), t => t.RenderTarget.Name == "GameGrid").RenderTarget as Texture2D;
+
+        m_canvasSize = new(can.Width, can.Height);
+
+        m_canvasGpuId = m_GuiRenderer.BindTexture(can);
     }
 
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-    }
 
+        base.LoadContent();
+    }
 
     protected override void Update(GameTime gameTime)
     {
@@ -61,54 +58,45 @@ public class MyGame : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        m_layerStack.Update(gameTime);
 
         base.Update(gameTime);
     }
 
-    protected override void Draw(GameTime gameTime)
+    private void ImGuiDraw()
     {
-        float scale = (float)GraphicsDevice.Viewport.Height / (float)gameCanvas.Height;
+        bool isOpen = true;
+        ImGui.Begin("canvas", ref isOpen, ImGuiWindowFlags.NoTitleBar);
 
-        GraphicsDevice.SetRenderTarget(gameCanvas);
-        GraphicsDevice.Clear(Color.CornflowerBlue);
+        Vector2 area = ImGui.GetContentRegionAvail();
+        float scaleY = area.Y / m_canvasSize.Y;
+        float scaleX = area.X / m_canvasSize.X;
+        float scale = Math.Min(scaleX, scaleY);
+        Vector2 imageSize = m_canvasSize * scale;
 
-
-        _spriteBatch.Begin();
-
-        m_layerStack.Draw(_spriteBatch); //?
-
-        _spriteBatch.End();
-
-
-        GraphicsDevice.SetRenderTarget(null);
-        GraphicsDevice.Clear(Color.CornflowerBlue); //? 
-
-        _spriteBatch.Begin();
-        _spriteBatch.Draw(gameCanvas, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f); // output from game layer
-        _spriteBatch.End();
-
-
-        base.Draw(gameTime);
-
-
-        GuiRenderer.BeginLayout(gameTime);
-
-        //Insert Your ImGui code
-
-        ImGui.Begin("mywindow");
-
-        ImGui.Text("Hello tetris");
+        ImGui.SetCursorPos((ImGui.GetWindowSize() - imageSize).ToNumerics() * 0.5f);
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, 0f);
+        ImGui.Image(m_canvasGpuId, imageSize.ToNumerics());
+        ImGui.PopStyleVar();
 
         ImGui.End();
 
-        GuiRenderer.EndLayout();
+    }
+
+    protected override void Draw(GameTime gameTime)
+    {
+
+        GraphicsDevice.Clear(Color.DarkRed);
+
+        base.Draw(gameTime);
+
+        m_GuiRenderer.BeginLayout(gameTime);
+        ImGuiDraw();
+        m_GuiRenderer.EndLayout();
     }
 
     protected override void OnExiting(object sender, EventArgs args)
     {
         Utility.Shutdown();
-
         base.OnExiting(sender, args);
     }
 }
