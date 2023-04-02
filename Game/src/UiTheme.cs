@@ -90,5 +90,62 @@ namespace Tetris
             style.LogSliderDeadzone = 4;
             style.TabRounding = 4;
         }
+
+        public static void DrawDockSpace(Microsoft.Xna.Framework.Game game)
+        {
+            var io = ImGui.GetIO();
+            bool p_open = true;
+            ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags.None;
+
+            // We are using the ImGuiWindowFlags.NoDocking flag to make the parent window not dockable into,
+            // because it would be confusing to have two docking targets within each others.
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus;
+
+            ImGuiViewportPtr viewport = ImGui.GetMainViewport();
+
+            ImGui.SetNextWindowPos(viewport.WorkPos);
+            ImGui.SetNextWindowSize(viewport.WorkSize);
+            ImGui.SetNextWindowViewport(viewport.ID);
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
+
+
+            if ((int)(dockspace_flags & ImGuiDockNodeFlags.PassthruCentralNode) > 0)
+                window_flags |= ImGuiWindowFlags.NoBackground;
+
+            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new System.Numerics.Vector2(0.0f, 0.0f));
+            ImGui.Begin("DockSpace", ref p_open, window_flags);
+            ImGui.PopStyleVar();
+            ImGui.PopStyleVar(2);
+
+
+            if ((int)(io.ConfigFlags & ImGuiConfigFlags.DockingEnable) == 0)
+            {
+                int a = 0;// error docing disabled
+            }
+
+            uint dockspace_id = ImGui.GetID("MyDockSpace");
+
+            ImGui.DockSpace(dockspace_id, new System.Numerics.Vector2(0.0f, 0.0f), dockspace_flags);
+            
+            ImGui.End();
+        }
+
+        public static void OptionsWindow()
+        {
+            bool open = true;
+            ImGui.Begin("Options", ref open);
+
+            if (ImGui.Button("Restart game"))
+            {
+                //todo restart tetris
+            }
+
+            //todo add buttons for sound control
+            //todo add keyboard keybind explanation
+            //todo add bgcolor control
+
+            ImGui.End();
+        }
     }
 }

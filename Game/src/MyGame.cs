@@ -26,7 +26,7 @@ public class MyGame : Game
 
     void OnResize(object sender, EventArgs args)
     {
-        ImGui.GetIO().DisplaySize = new System.Numerics.Vector2(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+        ImGui.GetIO().DisplaySize = new System.Numerics.Vector2(Window.ClientBounds.Width , Window.ClientBounds.Height);
     }
 
     protected override void Initialize()
@@ -73,75 +73,11 @@ public class MyGame : Game
         base.Update(gameTime);
     }
 
-    private void DockSpace()
-    {
-        var io = ImGui.GetIO();
-        bool p_open = true;
-        ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags.None;
-
-        // We are using the ImGuiWindowFlags.NoDocking flag to make the parent window not dockable into,
-        // because it would be confusing to have two docking targets within each others.
-        ImGuiWindowFlags window_flags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus;
-
-        ImGuiViewportPtr viewport = ImGui.GetMainViewport();
-
-        ImGui.SetNextWindowPos(viewport.WorkPos);
-        ImGui.SetNextWindowSize(viewport.WorkSize);
-        ImGui.SetNextWindowViewport(viewport.ID);
-        ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
-        ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
-
-
-        if ((int)(dockspace_flags & ImGuiDockNodeFlags.PassthruCentralNode) > 0)
-            window_flags |= ImGuiWindowFlags.NoBackground;
-
-        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new System.Numerics.Vector2(0.0f, 0.0f));
-        ImGui.Begin("DockSpace", ref p_open, window_flags);
-        ImGui.PopStyleVar();
-        ImGui.PopStyleVar(2);
-
-
-        if ((int)(io.ConfigFlags & ImGuiConfigFlags.DockingEnable) == 0)
-        {
-            int a = 0;// error docing disabled
-        }
-
-        uint dockspace_id = ImGui.GetID("MyDockSpace");
-
-        ImGui.DockSpace(dockspace_id, new System.Numerics.Vector2(0.0f, 0.0f), dockspace_flags);
-
-        if (ImGui.BeginMenuBar())
-        {
-
-            if (ImGui.BeginMenu("Options"))
-            {
-                ImGui.Separator();
-
-                if (ImGui.MenuItem("ImGui: PassthruCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags.PassthruCentralNode) != 0, true))
-                {
-                    dockspace_flags ^= ImGuiDockNodeFlags.PassthruCentralNode;
-                }
-
-                ImGui.Separator();
-
-                if (ImGui.MenuItem("Close", null, false, true))
-                {
-                    this.Exit();
-                }
-                ImGui.EndMenu();
-            }
-
-            ImGui.EndMenuBar();
-        }
-
-        ImGui.End();
-    }
-
     private void ImGuiDraw()
     {
-        DockSpace();
+        UiTheme.DrawDockSpace(this);
         bool isOpen = true;
-        ImGui.Begin("canvas", ref isOpen, ImGuiWindowFlags.NoTitleBar);
+        ImGui.Begin("canvas", ref isOpen, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoCollapse);
 
         Vector2 area = ImGui.GetContentRegionAvail();
         float scaleY = area.Y / m_canvasSize.Y;
@@ -156,23 +92,10 @@ public class MyGame : Game
 
         ImGui.End();
 
-        ImGui.Begin("Options");
+        UiTheme.OptionsWindow();
 
-        if (ImGui.Button("Restart game"))
-        {
-            //todo restart tetris
-        }
-
-        //todo add buttons for sound control
-        //todo add keyboard keybind explanation
-        //todo add bgcolor control
-
-        ImGui.End();
-
-        ImGui.ShowDemoWindow();
-        ImGui.ShowFontSelector("mylabel");
-
-        ImGui.ShowStyleSelector("selector laber");
+        // ImGui.ShowFontSelector("mylabel");
+        // ImGui.ShowStyleSelector("selector laber");
 
         ImGui.ShowStyleEditor();
 
