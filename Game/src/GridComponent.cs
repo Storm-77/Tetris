@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Tetris
 {
-    public class GridLayer : DrawableGameComponent
+    public class GridComponent : DrawableGameComponent
     {
         private TetrominoController m_tetrominoController;
         private Grid m_grid;
@@ -15,7 +15,7 @@ namespace Tetris
 
         Texture2D m_bg;
 
-        public GridLayer(Game owner) : base(owner)
+        public GridComponent(Game owner) : base(owner)
         {
             m_grid = new Grid(GameData.cellsX, GameData.cellsY, GameData.cellSize);
             m_controllerFactory = new TetrominoControllerFactory(ref m_grid);
@@ -98,17 +98,6 @@ namespace Tetris
         protected override void UnloadContent()
         {
         }
-
-        public Vector2 GetGridSizePx()
-        {
-            Vector2 size;
-
-            size.X = m_grid.Width * m_grid.CellSize;
-            size.Y = m_grid.Height * m_grid.CellSize;
-
-            return size;
-        }
-
 
     }
 }

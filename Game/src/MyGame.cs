@@ -33,7 +33,7 @@ public class MyGame : Game
 
         Utility.Init(GraphicsDevice);
 
-        var layer = new GridLayer(this);
+        var layer = new GridComponent(this);
         Components.Add(layer);
 
         base.Initialize();
