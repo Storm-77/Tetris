@@ -84,7 +84,6 @@ namespace Tetris
 
                 if (X < 0 || Y < 0 || grid[X, Y] != Color.Black)
                 {
-                    Positon.Y--;
                     return true;
                 }
             }

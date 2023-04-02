@@ -58,11 +58,17 @@ namespace Tetris
                 m_tetrominoController = m_controllerFactory.MakeController();
             }
 
-            if (m_grid.DetectCollision(m_tetrominoController.Tetromino) || m_tetrominoController.Tetromino.MaxYComponent() == m_grid.Height - 1) //collision or ground hit
+            m_tetrominoController.Update(gameTime, m_grid);
+
+            bool magicFlag = m_grid.DetectCollision(m_tetrominoController.Tetromino);
+            if (m_tetrominoController.Tetromino.MaxYComponent() == m_grid.Height - 1 || magicFlag)
             {
+                if (magicFlag)
+                    m_tetrominoController.Tetromino.Positon.Y--;
+
                 if (m_tetrominoController.Tetromino.Positon.Y <= m_grid.TetrominoSpawnHeight) //game over
                 {
-                    int a = 0;
+                    int asdasd = 0;
                     //todo switch to game over screeen
                     return;
                 }
@@ -71,7 +77,6 @@ namespace Tetris
                 m_tetrominoController = m_controllerFactory.MakeController();
             }
 
-            m_tetrominoController.Update(gameTime);
             m_grid.TestFills();
 
         }

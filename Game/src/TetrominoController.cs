@@ -40,7 +40,7 @@ namespace Tetris
         private uint m_tickDelay;
 
         private System.TimeSpan m_prev;
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, Grid grid)
         {
             uint dl = Keyboard.GetState().IsKeyDown(Keys.Down) ? 30 : m_tickDelay;
 
@@ -62,6 +62,9 @@ namespace Tetris
             {
                 m_flagLeft = true;
                 Tetromino.Positon.X--;
+                if (grid.DetectCollision(Tetromino))
+                    Tetromino.Positon.X++;
+
             }
 
             //move to the right
@@ -72,6 +75,8 @@ namespace Tetris
             {
                 m_flagRight = true;
                 Tetromino.Positon.X++;
+                if (grid.DetectCollision(Tetromino))
+                    Tetromino.Positon.X--;
             }
 
             //rotarion
@@ -85,7 +90,6 @@ namespace Tetris
             }
 
             Tetromino.CheckOuterBorders();
-
         }
     }
 }
