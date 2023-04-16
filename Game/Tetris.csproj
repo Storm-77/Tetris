@@ -29,4 +29,10 @@
     <Message Text="Restoring dotnet tools" Importance="High" />
     <Exec Command="dotnet tool restore" />
   </Target>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <Content Include="imgui.ini" CopyToOutputDirectory="PreserveNewest">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </Content>
+  </ItemGroup>
+  
 </Project>
