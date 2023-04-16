@@ -3,16 +3,18 @@ using System.Numerics;
 
 namespace Tetris
 {
-    public static class UiTheme
+    public static class UI
     {
         public static void EmbraceTheDarkness()
         {
             var colors = ImGui.GetStyle().Colors;
 
             // colors[(int)ImGuiCol.Text] = new Vector4(1.00f, 1.00f, 1.00f, 1.00f);
-            colors[(int)ImGuiCol.Text] = new Vector4(0.669f, 0.425f, 0.098f, 1.00f);
+            colors[(int)ImGuiCol.Text] = new Vector4(73f / 255f, 200f / 255f, 90f / 255f, 1.00f);
+            // colors[(int)ImGuiCol.Text] = new Vector4(0.669f, 0.425f, 0.098f, 1.00f);
             colors[(int)ImGuiCol.TextDisabled] = new Vector4(0.50f, 0.50f, 0.50f, 1.00f);
-            colors[(int)ImGuiCol.WindowBg] = new Vector4(0.10f, 0.10f, 0.10f, 1.00f);
+            colors[(int)ImGuiCol.WindowBg] = new Vector4(23f / 255f, 20f / 255f, 20f / 255f, 1.00f);
+            // colors[(int)ImGuiCol.WindowBg] = new Vector4(0.10f, 0.10f, 0.10f, 1.00f);
             colors[(int)ImGuiCol.ChildBg] = new Vector4(0.00f, 0.00f, 0.00f, 0.00f);
             colors[(int)ImGuiCol.PopupBg] = new Vector4(0.19f, 0.19f, 0.19f, 0.92f);
             colors[(int)ImGuiCol.Border] = new Vector4(0.19f, 0.19f, 0.19f, 0.29f);
@@ -31,8 +33,10 @@ namespace Tetris
             colors[(int)ImGuiCol.CheckMark] = new Vector4(0.33f, 0.67f, 0.86f, 1.00f);
             colors[(int)ImGuiCol.SliderGrab] = new Vector4(0.34f, 0.34f, 0.34f, 0.54f);
             colors[(int)ImGuiCol.SliderGrabActive] = new Vector4(0.56f, 0.56f, 0.56f, 0.54f);
-            colors[(int)ImGuiCol.Button] = new Vector4(0.05f, 0.05f, 0.05f, 0.54f);
-            colors[(int)ImGuiCol.ButtonHovered] = new Vector4(0.19f, 0.19f, 0.19f, 0.54f);
+            // colors[(int)ImGuiCol.Button] = new Vector4(0.05f, 0.05f, 0.05f, 0.54f);
+            colors[(int)ImGuiCol.Button] = new Vector4(98f / 255f, 40f / 255f, 140f / 255f, 0.54f);
+            colors[(int)ImGuiCol.ButtonHovered] = new Vector4(231f / 255f, 187f / 255f, 9f / 255f, 0.54f);
+            // colors[(int)ImGuiCol.ButtonHovered] = new Vector4(0.19f, 0.19f, 0.19f, 0.54f);
             colors[(int)ImGuiCol.ButtonActive] = new Vector4(0.20f, 0.22f, 0.23f, 1.00f);
             colors[(int)ImGuiCol.Header] = new Vector4(0.00f, 0.00f, 0.00f, 0.52f);
             colors[(int)ImGuiCol.HeaderHovered] = new Vector4(0.00f, 0.00f, 0.00f, 0.36f);
@@ -89,17 +93,20 @@ namespace Tetris
             style.GrabRounding = 3;
             style.LogSliderDeadzone = 4;
             style.TabRounding = 4;
+            style.WindowMenuButtonPosition = ImGuiDir.None;
         }
 
         public static void DrawDockSpace(Microsoft.Xna.Framework.Game game)
         {
             var io = ImGui.GetIO();
             bool p_open = true;
-            ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags.None;
+            ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags.AutoHideTabBar;
 
             // We are using the ImGuiWindowFlags.NoDocking flag to make the parent window not dockable into,
             // because it would be confusing to have two docking targets within each others.
-            ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus;
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoCollapse |
+            ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus |
+            ImGuiWindowFlags.NoDecoration;
 
             ImGuiViewportPtr viewport = ImGui.GetMainViewport();
 
@@ -118,7 +125,6 @@ namespace Tetris
             ImGui.PopStyleVar();
             ImGui.PopStyleVar(2);
 
-
             if ((int)(io.ConfigFlags & ImGuiConfigFlags.DockingEnable) == 0)
             {
                 int a = 0;// error docing disabled
@@ -127,25 +133,23 @@ namespace Tetris
             uint dockspace_id = ImGui.GetID("MyDockSpace");
 
             ImGui.DockSpace(dockspace_id, new System.Numerics.Vector2(0.0f, 0.0f), dockspace_flags);
-            
+
             ImGui.End();
         }
 
-        public static void OptionsWindow()
+        public static bool ButtonCenteredOnLine(string label, float alignment = 0.5f)
         {
-            bool open = true;
-            ImGui.Begin("Options", ref open);
+            ImGuiStylePtr style = ImGui.GetStyle();
 
-            if (ImGui.Button("Restart game"))
-            {
-                //todo restart tetris
-            }
+            float size = ImGui.CalcTextSize(label).X + style.FramePadding.X * 2.0f;
+            float avail = ImGui.GetContentRegionAvail().X;
 
-            //todo add buttons for sound control
-            //todo add keyboard keybind explanation
-            //todo add bgcolor control
+            float off = (avail - size) * alignment;
+            if (off > 0.0f)
+                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + off);
 
-            ImGui.End();
+            return ImGui.Button(label);
         }
+
     }
 }

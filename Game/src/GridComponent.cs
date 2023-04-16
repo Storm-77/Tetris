@@ -12,8 +12,8 @@ namespace Tetris
         private TetrominoControllerFactory m_controllerFactory;
         private RenderTarget2D m_canvas;
         private SpriteBatch m_spriteBatch;
-
-        Texture2D m_bg;
+        private Texture2D m_bg;
+        private SpriteFont m_spriteFont;
 
         public GridComponent(Game owner) : base(owner)
         {
@@ -23,7 +23,6 @@ namespace Tetris
 
         protected override void LoadContent()
         {
-            m_bg = Game.Content.Load<Texture2D>("background");
         }
 
         public override void Initialize()
@@ -40,6 +39,9 @@ namespace Tetris
             m_spriteBatch = new SpriteBatch(GraphicsDevice);
 
             GraphicsDevice.SetRenderTargets(m_canvas);
+
+            m_bg = Game.Content.Load<Texture2D>("background");
+            m_spriteFont = Game.Content.Load<SpriteFont>("Text");
         }
 
         bool m_flagW = true;
@@ -68,8 +70,8 @@ namespace Tetris
 
                 if (m_tetrominoController.Tetromino.Positon.Y <= m_grid.TetrominoSpawnHeight) //game over
                 {
-                    int asdasd = 0;
-                    //todo switch to game over screeen
+                    gameOver = true;
+                    this.Enabled = false;
                     return;
                 }
                 m_grid.LandTetromino(m_tetrominoController.Tetromino);
@@ -80,7 +82,7 @@ namespace Tetris
             m_grid.TestFills();
 
         }
-
+        bool gameOver = false;
         public override void Draw(GameTime _)
         {
             GraphicsDevice.SetRenderTarget(m_canvas);
@@ -88,8 +90,16 @@ namespace Tetris
 
             m_spriteBatch.Begin();
 
+            m_spriteBatch.Draw(m_bg, new Rectangle(0, 0, m_canvas.Width, m_canvas.Height), Color.White);
+
             m_tetrominoController.Tetromino.Draw(m_spriteBatch);
             m_grid.DrawLines(m_spriteBatch); // grid lines drawn over tetrominos
+
+            if (gameOver)
+            {
+                Vector2 scale = new Vector2(4f);
+                m_spriteBatch.DrawString(m_spriteFont, "GAME OVER!", new Vector2(100, m_canvas.Height / 2 - 50), Color.Red, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            }
 
             m_spriteBatch.End();
             GraphicsDevice.SetRenderTarget(null);
@@ -97,6 +107,13 @@ namespace Tetris
 
         protected override void UnloadContent()
         {
+        }
+
+        public void Restart()
+        {
+            m_grid = new Grid(GameData.cellsX, GameData.cellsY, GameData.cellSize);
+            m_tetrominoController = m_controllerFactory.MakeController();
+            gameOver = false;
         }
 
     }

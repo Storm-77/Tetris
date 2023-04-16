@@ -82,6 +82,9 @@ namespace Tetris
                 int X = (int)(Positon.X + A);
                 int Y = (int)(Positon.Y + B);
 
+                if (X >= m_myGrid.Width || Y >= m_myGrid.Height)
+                    continue;
+
                 if (X < 0 || Y < 0 || grid[X, Y] != Color.Black)
                 {
                     return true;

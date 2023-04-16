@@ -25,6 +25,18 @@
 /processorParam:TextureFormat=Color
 /build:background.jpg
 
+#begin Keys.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Keys.png
+
 #begin sound-mute.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -48,4 +60,23 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:sound.png
+
+#begin Text.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Text.spritefont
+
+#begin wp7341392.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:wp7341392.jpg;bg_tree.jpg
 
